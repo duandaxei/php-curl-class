@@ -54,7 +54,7 @@ class Test
     public static function getTestUrl($port)
     {
         if (getenv('PHP_CURL_CLASS_LOCAL_TEST') === 'yes' ||
-            in_array(getenv('TRAVIS_PHP_VERSION'), array('7.0', '7.1', '7.2', '7.3', '7.4', 'nightly'))) {
+            in_array(getenv('TRAVIS_PHP_VERSION'), array('7.0', '7.1', '7.2', '7.3', '7.4', '8.0', 'nightly'))) {
             return 'http://127.0.0.1:' . $port . '/';
         } else {
             return self::TEST_URL;
@@ -152,4 +152,18 @@ function get_multi_curl_property_value($instance, $property_name)
     $property = $reflector->getProperty($property_name);
     $property->setAccessible(true);
     return $property->getValue($instance);
+}
+
+function get_request_stats($start, $stop, $request_stats)
+{
+    foreach ($request_stats as $key => &$value) {
+        $value['relative_start'] = sprintf('%.6f', round($value['start'] - $start, 6));
+        $value['relative_stop'] = sprintf('%.6f', round($value['stop'] - $start, 6));
+        $value['duration'] = (string)round($value['stop'] - $value['start'], 6);
+
+        unset($value['start']);
+        unset($value['stop']);
+    }
+
+    return $request_stats;
 }
