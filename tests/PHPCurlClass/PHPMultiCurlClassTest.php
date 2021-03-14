@@ -2977,9 +2977,22 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
         $multi_curl = new MultiCurl();
         $multi_curl->addGet(Test::TEST_URL);
         $multi_curl->start();
-        $this->assertTrue(is_resource($multi_curl->multiCurl));
+        $this->assertNotNull($multi_curl->multiCurl);
         $multi_curl->close();
-        $this->assertFalse(is_resource($multi_curl->multiCurl));
+        $this->assertNull($multi_curl->multiCurl);
+    }
+
+    public function testCookieJarAfterClose()
+    {
+        $cookie_jar = tempnam('/tmp', 'php-curl-class.');
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setCookieJar($cookie_jar);
+        $multi_curl->addGet(Test::TEST_URL);
+        $multi_curl->start();
+        $multi_curl->close();
+        $cookies = file_get_contents($cookie_jar);
+        $this->assertNotEmpty($cookies);
     }
 
     public function testMultiPostRedirectGet()

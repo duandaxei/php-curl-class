@@ -3015,9 +3015,21 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $curl = $test->curl;
         $curl->setHeader('X-DEBUG-TEST', 'post');
         $curl->post(Test::TEST_URL);
-        $this->assertTrue(is_resource($curl->curl));
+        $this->assertNotNull($curl->curl);
         $curl->close();
-        $this->assertFalse(is_resource($curl->curl));
+        $this->assertNull($curl->curl);
+    }
+
+    public function testCookieJarAfterClose()
+    {
+        $cookie_jar = tempnam('/tmp', 'php-curl-class.');
+
+        $curl = new Curl();
+        $curl->setCookieJar($cookie_jar);
+        $curl->get(Test::TEST_URL);
+        $curl->close();
+        $cookies = file_get_contents($cookie_jar);
+        $this->assertNotEmpty($cookies);
     }
 
     /**
