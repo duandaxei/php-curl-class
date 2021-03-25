@@ -85,6 +85,29 @@ class Url
     }
 
     /**
+     * Build Url
+     *
+     * @access public
+     * @param  $url
+     * @param  $mixed_data
+     *
+     * @return string
+     */
+    public static function buildUrl($url, $mixed_data = '')
+    {
+        $query_string = '';
+        if (!empty($mixed_data)) {
+            $query_mark = strpos($url, '?') > 0 ? '&' : '?';
+            if (is_string($mixed_data)) {
+                $query_string .= $query_mark . $mixed_data;
+            } elseif (is_array($mixed_data)) {
+                $query_string .= $query_mark . http_build_query($mixed_data, '', '&');
+            }
+        }
+        return $url . $query_string;
+    }
+
+    /**
      * Absolutize url.
      *
      * Combine the base and relative url into an absolute url.
@@ -101,7 +124,7 @@ class Url
         $r = $this->parseUrl($this->relativeUrl);
         $r['authorized'] = isset($r['scheme']) || isset($r['host']) || isset($r['port'])
             || isset($r['user']) || isset($r['pass']);
-        $target = array();
+        $target = [];
         if (isset($r['scheme'])) {
             $target['scheme'] = $r['scheme'];
             $target['host'] = isset($r['host']) ? $r['host'] : null;
@@ -173,7 +196,7 @@ class Url
         // $9 = Related (fragment)
         preg_match('/^(([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/', $url, $output_array);
 
-        $parts = array();
+        $parts = [];
         if (isset($output_array['1']) && $output_array['1'] !== '') {
             $parts['scheme'] = $output_array['1'];
         }

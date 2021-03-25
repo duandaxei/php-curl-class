@@ -4,15 +4,14 @@
 <meta charset="utf-8" />
 <title>PHP Curl Class</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="PHP Curl Class: HTTP requests made easy" />
+<meta name="description" content="Easily send HTTP requests and integrate with web APIs using PHP Curl Class" />
 <style>
 
 body {
-    color: #444;
+    color: #333;
     font-size: 16px;
     line-height: 1.6;
     margin: 40px auto;
-    max-width: 640px;
     padding: 0 10px;
 }
 
@@ -25,28 +24,44 @@ a:hover {
     text-decoration: underline;
 }
 
-ul {
-    font-size: 18px;
-    margin-left: 12px;
-    margin-top: 42px;
+h1 {
+    font-size: 4em;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin: 36px 0 18px;
+    text-align: center;
 }
 
+h2 {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1.5em;
+    font-weight: 200;
+    text-align: center;
+}
+
+figure {
+    text-align: center;
+}
 
 code {
-    background-color: #f7f7f7;
+    background-color: #f6f8fa;
     color: #b3b3b3;
-    display: block;
-    font-family: monospace;
-    padding: 8px 12px;
+    display: inline-block;
+    font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+    margin: 0 auto;
+    padding: 14px 20px;
+    text-align: left;
 }
 
 code span {
-    color: #333;
+    color: #24292e;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+p {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 640px;
+    text-align: center;
 }
 
 .pl-c {
@@ -140,56 +155,45 @@ ul {
 </head>
 <body>
 
-<h1>PHP Curl Class: HTTP requests made easy</h1>
+<h1>PHP Curl Class</h1>
+<h2>Easily send HTTP requests and integrate with web APIs</h2>
 
-<code>
-$ composer require php-curl-class/php-curl-class &amp;&gt; /dev/null<br />
-$ php --interactive<br />
-php &gt; <span class="pl-s1"><span class="pl-k">require</span> <span class="pl-c1">__DIR__</span> <span
-class="pl-k">.</span> <span class="pl-s"><span class="pl-pds">'</span>/vendor/autoload.php<span
-class="pl-pds">'</span></span>;</span><br />
-php &gt; <span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">\Curl\Curl</span>;</span><br />
-php &gt; <span class="pl-s1"><span class="pl-smi">$curl</span> <span class="pl-k">=</span> <span
-class="pl-k">new</span> <span class="pl-c1">\Curl\</span><span class="pl-c1">Curl</span>();</span><br />
-php &gt; <span class="pl-s1"><span class="pl-smi">$curl</span><span
-class="pl-k">-&gt;</span>setBasicAuthentication(<span class="pl-s"><span class="pl-pds">'</span>user<span
-class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>pass<span
-class="pl-pds">'</span></span>);</span><br />
-php &gt; <span class="pl-s1"><span class="pl-smi">$curl</span><span class="pl-k">-&gt;</span>get(<span
-class="pl-s"><span class="pl-pds">'</span>https://api.github.com/user<span class="pl-pds">'</span></span>);</span><br />
-php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span
-class="pl-k">-&gt;</span><span class="pl-smi">httpStatusCode</span>;</span><br />
-<span class="pl-s1"><span class="pl-c1">200</span></span><br />
-php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span
-class="pl-k">-&gt;</span><span class="pl-smi">responseHeaders</span>[<span class="pl-s"><span
-class="pl-pds">'</span>content-type<span class="pl-pds">'</span></span>];</span><br />
-<span class="pl-s1"><span class="pl-s"><span class="pl-pds"></span>application/json; charset=utf-8<span
-class="pl-pds"></span></span></span><br />
-php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span
-class="pl-k">-&gt;</span><span class="pl-smi">response</span><span class="pl-k">-&gt;</span><span
-class="pl-smi">login</span>;</span><br />
-<span class="pl-s1"><span class="pl-s"><span class="pl-pds"></span>php-curl-class<span
-class="pl-pds"></span></span></span><br />
-php &gt; <span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$curl</span><span
-class="pl-k">-&gt;</span><span class="pl-smi">rawResponse</span>;</span><br />
-<span class="pl-s1"><span class="pl-s"><span
-class="pl-pds"></span>{"login":"php-curl-class","id":7654321,"avatar_url": ...}<span
-class="pl-pds"></span></span></span><br />
-</code>
+<figure>
+    <code>
+        <span class="pl-s1"><span class="pl-c1">$</span>curl</span> = <span class="pl-k">new</span> <span class="pl-v">Curl</span>();<br />
+        <span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-en">get</span>(<span class="pl-s">'https://www.example.com/'</span>);<br />
+        <br />
+        <span class="pl-k">if</span> (<span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-c1">error</span>) {<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="pl-k">echo</span> <span class="pl-s">'Error: '</span> . <span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-c1">errorCode</span> . <span class="pl-s">': '</span> . <span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-c1">errorMessage</span> . <span class="pl-s">"\n"</span>;<br />
+        } <span class="pl-k">else</span> {<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="pl-k">echo</span> <span class="pl-s">'Success! Here is the response:'</span> . <span class="pl-s">"\n"</span>;<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="pl-en">var_dump</span>(<span class="pl-s1"><span class="pl-c1">$</span>curl</span>-&gt;<span class="pl-c1">response</span>);<br />
+        }<br />
+    </code>
+</figure>
 
-<ul>
-    <li>
-        <a href="https://github.com/php-curl-class/php-curl-class">
-            https://github.com/php-curl-class/php-curl-class
-        </a>
-    </li>
-    <li>
-        <a href="https://packagist.org/packages/php-curl-class/php-curl-class">
-            https://packagist.org/packages/php-curl-class/php-curl-class
-        </a>
-    </li>
-</ul>
-
+<p>
+    <a href="https://github.com/php-curl-class/php-curl-class/releases/">
+        <img
+            alt=""
+            src="https://img.shields.io/github/release/php-curl-class/php-curl-class.svg?style=flat-square">
+    </a>
+    <a href="https://github.com/php-curl-class/php-curl-class/blob/master/LICENSE">
+        <img
+            alt=""
+            src="https://img.shields.io/github/license/php-curl-class/php-curl-class.svg?style=flat-square">
+    </a>
+    <a href="https://github.com/php-curl-class/php-curl-class/actions/workflows/ci.yml">
+        <img
+            alt=""
+            src="https://img.shields.io/github/workflow/status/php-curl-class/php-curl-class/ci?style=flat-square">
+    </a>
+    <a href="https://github.com/php-curl-class/php-curl-class/releases/">
+        <img
+            alt=""
+            src="https://img.shields.io/packagist/dt/php-curl-class/php-curl-class.svg?style=flat-square">
+    </a>
+</p>
 
 </body>
 </html>
