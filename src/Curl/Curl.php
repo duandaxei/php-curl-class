@@ -8,7 +8,7 @@ use Curl\Url;
 
 class Curl
 {
-    const VERSION = '9.1.0';
+    const VERSION = '9.2.0';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl = null;
@@ -685,7 +685,7 @@ class Curl
      *       - According to the HTTP specs (see [1]), a 303 redirection should be followed using
      *         the GET method. 301 and 302 must not.
      *       - In order to force a 303 redirection to be performed using the same method, the
-     *         underlying cURL object must be set in a special state (the CURLOPT_CURSTOMREQUEST
+     *         underlying cURL object must be set in a special state (the CURLOPT_CUSTOMREQUEST
      *         option must be set to the method to use after the redirection). Due to a limitation
      *         of the cURL extension of PHP < 5.5.11 ([2], [3]), it is not possible to reset this
      *         option. Using these PHP engines, it is therefore impossible to restore this behavior
@@ -1446,6 +1446,56 @@ class Curl
         }
 
         $this->initialize();
+    }
+
+    /**
+     * Set auto referer
+     *
+     * @access public
+     */
+    public function setAutoReferer($auto_referer = true)
+    {
+        $this->setAutoReferrer($auto_referer);
+    }
+
+    /**
+     * Set auto referrer
+     *
+     * @access public
+     */
+    public function setAutoReferrer($auto_referrer = true)
+    {
+        $this->setOpt(CURLOPT_AUTOREFERER, $auto_referrer);
+    }
+
+    /**
+     * Set follow location
+     *
+     * @access public
+     */
+    public function setFollowLocation($follow_location = true)
+    {
+        $this->setOpt(CURLOPT_FOLLOWLOCATION, $follow_location);
+    }
+
+    /**
+     * Set forbid reuse
+     *
+     * @access public
+     */
+    public function setForbidReuse($forbid_reuse = true)
+    {
+        $this->setOpt(CURLOPT_FORBID_REUSE, $forbid_reuse);
+    }
+
+    /**
+     * Set maximum redirects
+     *
+     * @access public
+     */
+    public function setMaximumRedirects($maximum_redirects)
+    {
+        $this->setOpt(CURLOPT_MAXREDIRS, $maximum_redirects);
     }
 
     public function getCurl()
