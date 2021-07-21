@@ -4030,25 +4030,41 @@ class CurlTest extends \PHPUnit\Framework\TestCase
 
     public function testDiagnose()
     {
-        $test = new Test();
-        $test->server('error_message', 'GET');
-
+        // Test diagnose() with default parameters.
+        $test_1 = new Test();
+        $test_1->server('error_message', 'GET');
         ob_start();
-        $test->curl->diagnose();
-        $output = ob_get_contents();
+        $test_1->curl->diagnose();
+        $test_1_output = ob_get_contents();
         ob_end_clean();
 
-        $this->assertStringContainsString('--- Begin PHP Curl Class diagnostic output ---', $output);
-        $this->assertStringContainsString('PHP Curl Class version: ' . Curl::VERSION, $output);
-        $this->assertStringContainsString('PHP version: ' . PHP_VERSION, $output);
-        $this->assertStringContainsString('Sent an HTTP GET request ', $output);
-        $this->assertStringContainsString('Request contained no body.', $output);
-        $this->assertStringContainsString('Received an HTTP status code of 401.', $output);
-        $this->assertStringContainsString(
+        // Test diagnose() with return=true.
+        $test_2 = new Test();
+        $test_2->server('error_message', 'GET');
+        $test_2_output = $test_2->curl->diagnose(true);
+
+        // Test diagnose() with return=false.
+        $test_3 = new Test();
+        $test_3->server('error_message', 'GET');
+        ob_start();
+        $test_3->curl->diagnose(false);
+        $test_3_output = ob_get_contents();
+        ob_end_clean();
+
+        foreach ([
+            '--- Begin PHP Curl Class diagnostic output ---',
+            'PHP Curl Class version: ' . Curl::VERSION,
+            'PHP version: ' . PHP_VERSION,
+            'Sent an HTTP GET request ',
+            'Request contained no body.',
+            'Received an HTTP status code of 401.',
             'Received an HTTP 401 error response with message "HTTP/1.1 401 Unauthorized".',
-            $output
-        );
-        $this->assertStringContainsString('Received an empty response body (response="").', $output);
-        $this->assertStringContainsString('--- End PHP Curl Class diagnostic output ---', $output);
+            'Received an empty response body (response="").',
+            '--- End PHP Curl Class diagnostic output ---',
+        ] as $expected_string) {
+            $this->assertStringContainsString($expected_string, $test_1_output);
+            $this->assertStringContainsString($expected_string, $test_2_output);
+            $this->assertStringContainsString($expected_string, $test_3_output);
+        }
     }
 }
