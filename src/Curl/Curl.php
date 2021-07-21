@@ -1461,7 +1461,7 @@ class Curl
             echo
                 'Sent an HTTP '   . $request_method . ' request to "' . $request_url . '".' . "\n" .
                 'Request contained ' . (
-                    $request_headers_count === 1 ? 'no headers.' :
+                    $request_headers_count === 0 ? 'no headers.' :
                     $request_headers_count . ' headers:'
                 ) . "\n";
             if ($this->requestHeaders !== null) {
@@ -1474,9 +1474,15 @@ class Curl
 
             echo 'Request contained ' . ($request_body_empty ? 'no body' : 'a body') . '.' . "\n";
 
+            if ($this->getOpt(CURLOPT_VERBOSE) || $this->getOpt(CURLINFO_HEADER_OUT) !== true) {
+                echo
+                    'Warning: Request headers (Curl::requestHeaders) are expected be empty ' .
+                    '(CURLOPT_VERBOSE was enabled or CURLINFO_HEADER_OUT was disabled).' . "\n";
+            }
+
             echo
                 'Received response containing ' . (
-                    $response_headers_count === 1 ? 'no headers.' :
+                    $response_headers_count === 0 ? 'no headers.' :
                     $response_headers_count . ' headers:'
                 ) . "\n";
             if ($this->responseHeaders !== null) {
@@ -1485,6 +1491,14 @@ class Curl
                     echo '    ' . $i . ' ' . $key . ': ' . $value . "\n";
                     $i += 1;
                 }
+            }
+
+            if (!isset($this->responseHeaders['Content-Type'])) {
+                echo 'Response did not set a content type' . "\n";
+            } elseif (preg_match($this->jsonPattern, $this->responseHeaders['Content-Type'])) {
+                echo 'Response appears to be JSON' . "\n";
+            } elseif (preg_match($this->xmlPattern, $this->responseHeaders['Content-Type'])) {
+                echo 'Response appears to be XML' . "\n";
             }
 
             if ($this->curlError) {
@@ -1501,10 +1515,10 @@ class Curl
                     'with message "' . $this->httpErrorMessage . '".' . "\n";
             }
 
-            if ($this->response === null) {
-                echo 'Received no response body.' . "\n";
-            } elseif ($this->response === '') {
-                echo 'Received an empty response body.' . "\n";
+            if ($this->rawResponse === null) {
+                echo 'Received no response body (response=null).' . "\n";
+            } elseif ($this->rawResponse === '') {
+                echo 'Received an empty response body (response="").' . "\n";
             } else {
                 echo 'Received a non-empty response body.' . "\n";
                 echo 'Response content length: ' . $response_length . "\n";
