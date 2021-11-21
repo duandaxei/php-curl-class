@@ -1232,7 +1232,7 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $test_3->curl->setOpt(CURLINFO_HEADER_OUT, false);
         $test_3->curl->verbose();
         $test_3->server('response_header', 'GET');
-        $this->assertNull($test_3->curl->requestHeaders);
+        $this->assertEmpty($test_3->curl->requestHeaders);
     }
 
     public function testHeaderRedirect()
@@ -4134,5 +4134,32 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($test_3->curl->error);
         $this->assertFalse($test_3->curl->curlError);
         $this->assertFalse($test_3->curl->httpError);
+    }
+
+    public function testPostDataArray()
+    {
+        $data = ['key' => 'value'];
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'post');
+        $curl->post(Test::TEST_URL, $data);
+
+        $this->assertEquals('POST / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->url);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
+    }
+
+    public function testPostDataString()
+    {
+        $data = str_repeat('-', 100);
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'post_json');
+        $curl->post(Test::TEST_URL, $data);
+
+        $this->assertEquals('POST / HTTP/1.1', $curl->requestHeaders['Request-Line']);
+        $this->assertEquals(Test::TEST_URL, $curl->url);
+        $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
+        $this->assertEquals($data, $curl->response);
     }
 }
