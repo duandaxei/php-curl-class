@@ -8,7 +8,7 @@ use Curl\Url;
 
 class Curl
 {
-    const VERSION = '9.5.0';
+    const VERSION = '9.5.1';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl = null;
@@ -494,7 +494,7 @@ class Curl
         $this->headerCallbackData->stopRequest = false;
 
         // Include additional error code information in error message when possible.
-        if ($this->curlError && function_exists('curl_strerror')) {
+        if ($this->curlError) {
             $this->curlErrorMessage =
                 curl_strerror($this->curlErrorCode) . (
                     empty($this->curlErrorMessage) ? '' : ': ' . $this->curlErrorMessage
@@ -1428,7 +1428,7 @@ class Curl
      *
      * @access public
      * @param  bool $on
-     * @param  resource $output
+     * @param  resource|string $output
      */
     public function verbose($on = true, $output = 'STDERR')
     {
@@ -1567,7 +1567,7 @@ class Curl
      */
     public function reset()
     {
-        if (function_exists('curl_reset') && (is_resource($this->curl) || $this->curl instanceof \CurlHandle)) {
+        if (is_resource($this->curl) || $this->curl instanceof \CurlHandle) {
             curl_reset($this->curl);
         } else {
             $this->curl = curl_init();
