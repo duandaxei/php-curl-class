@@ -3256,7 +3256,12 @@ class CurlTest extends \PHPUnit\Framework\TestCase
             }
             echo '{"before":' . memory_get_usage() . ',';
             $curl = new Curl();
+
+            // Unset the $curl object instead of calling $curl->close(). Calling
+            // unset($curl) should trigger the clean up: __destruct() which
+            // calls $curl->close().
             unset($curl);
+
             echo '"after":' . memory_get_usage() . '}';
             sleep(1);
         }
@@ -4178,6 +4183,22 @@ class CurlTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('POST / HTTP/1.1', $curl->requestHeaders['Request-Line']);
         $this->assertEquals(Test::TEST_URL, $curl->url);
         $this->assertEquals(Test::TEST_URL, $curl->effectiveUrl);
+        $this->assertEquals('key=value', $curl->response);
+    }
+
+    public function testPostDataArrayNullValues()
+    {
+        $data = [
+            'key1' => 'value1',
+            'key2' => null,
+            'key3' => 'value3',
+        ];
+
+        $curl = new Curl();
+        $curl->setHeader('X-DEBUG-TEST', 'post');
+        $curl->post(Test::TEST_URL, $data);
+
+        $this->assertEquals('key1=value1&key2=&key3=value3', $curl->response);
     }
 
     public function testPostDataString()
