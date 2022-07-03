@@ -1016,6 +1016,8 @@ class MultiCurl
                                         'cURL multi add handle error: ' . curl_multi_strerror($curlm_error_code)
                                     );
                                 }
+
+                                $curl->call($curl->beforeSendCallback);
                             } else {
                                 $curl->execDone();
 
@@ -1055,7 +1057,12 @@ class MultiCurl
 
         // Attempt to stop active curl requests.
         while (count($this->activeCurls)) {
+            // Remove instance from active curls.
             $curl = array_pop($this->activeCurls);
+
+            // Remove active curl handle.
+            curl_multi_remove_handle($this->multiCurl, $curl->curl);
+
             $curl->stop();
         }
     }
