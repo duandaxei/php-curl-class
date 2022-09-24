@@ -18,20 +18,22 @@ PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.
 - [Available Methods](#available-methods)
 - [Security](#security)
 - [Troubleshooting](#troubleshooting)
-- [Run Tests](#run-tests)
+- [Testing](#testing)
 - [Contribute](#contribute)
 
 ---
 
 ### Installation
 
-To install PHP Curl Class, simply:
+To install PHP Curl Class, run the following command:
 
-    $ composer require php-curl-class/php-curl-class
+    composer require php-curl-class/php-curl-class
 
-For latest commit version:
+To install the latest commit version:
 
-    $ composer require php-curl-class/php-curl-class @dev
+    composer require php-curl-class/php-curl-class @dev
+
+Installation instructions to use the `composer` command can be found on https://github.com/composer/composer.
 
 ### Requirements
 
@@ -371,31 +373,13 @@ See [SECURITY](https://github.com/php-curl-class/php-curl-class/blob/master/SECU
 
 ### Troubleshooting
 
-See [TROUBLESHOOTING](https://github.com/php-curl-class/php-curl-class/blob/master/TROUBLESHOOTING.md) for troubleshooting.
+See [TROUBLESHOOTING](https://github.com/php-curl-class/php-curl-class/blob/master/TROUBLESHOOTING.md) for help troubleshooting.
 
-### Run Tests
+### Testing
 
-To run tests:
+See [TESTING](https://github.com/php-curl-class/php-curl-class/blob/master/TESTING.md) for testing information.
 
-    $ git clone https://github.com/php-curl-class/php-curl-class.git
-    $ cd php-curl-class/
-    $ composer update
-    $ ./tests/run.sh
-
-To run select tests:
-
-    $ git clone https://github.com/php-curl-class/php-curl-class.git
-    $ cd php-curl-class/
-    $ composer update
-    $ ./tests/run.sh --filter=keyword
-
-To test all PHP versions in containers:
-
-    $ git clone https://github.com/php-curl-class/php-curl-class.git
-    $ cd php-curl-class/
-    $ ./tests/test_all.sh
-
-### Contribute
+### Contributing
 
 1. Check for open issues or open a new issue to start a discussion around a bug or feature.
 1. Fork the repository on GitHub to start making your changes.
