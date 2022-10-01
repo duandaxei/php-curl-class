@@ -19,7 +19,7 @@ PHP Curl Class makes it easy to send HTTP requests and integrate with web APIs.
 - [Security](#security)
 - [Troubleshooting](#troubleshooting)
 - [Testing](#testing)
-- [Contribute](#contribute)
+- [Contributing](#contributing)
 
 ---
 
@@ -52,7 +52,7 @@ $curl = new Curl();
 $curl->get('https://www.example.com/');
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
+    echo 'Error: ' . $curl->errorMessage . "\n";
 } else {
     echo 'Response:' . "\n";
     var_dump($curl->response);
@@ -85,7 +85,7 @@ $curl->setCookie('key', 'value');
 $curl->get('https://www.example.com/');
 
 if ($curl->error) {
-    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
+    echo 'Error: ' . $curl->errorMessage . "\n";
 } else {
     echo 'Response:' . "\n";
     var_dump($curl->response);
