@@ -98,6 +98,7 @@ class Curl
 
     private static $deferredProperties = [
         'curlErrorCodeConstant',
+        'curlErrorCodeConstants',
         'effectiveUrl',
         'rfc2616',
         'rfc6265',
@@ -111,14 +112,14 @@ class Curl
      * @param  $base_url
      * @throws \ErrorException
      */
-    public function __construct($base_url = null)
+    public function __construct($base_url = null, $options = [])
     {
         if (!extension_loaded('curl')) {
             throw new \ErrorException('cURL library is not loaded');
         }
 
         $this->curl = curl_init();
-        $this->initialize($base_url);
+        $this->initialize($base_url, $options);
     }
 
     /**
@@ -1033,6 +1034,16 @@ class Curl
     }
 
     /**
+     * Set Default Header Out
+     *
+     * @access public
+     */
+    public function setDefaultHeaderOut()
+    {
+        $this->setOpt(CURLINFO_HEADER_OUT, true);
+    }
+
+    /**
      * Set Default Timeout
      *
      * @access public
@@ -1609,6 +1620,10 @@ class Curl
             $this->curl = curl_init();
         }
 
+        $this->setDefaultUserAgent();
+        $this->setDefaultTimeout();
+        $this->setDefaultHeaderOut();
+
         $this->initialize();
     }
 
@@ -1842,11 +1857,11 @@ class Curl
     }
 
     /**
-     * Get Curl Error Code Constant
+     * Get Curl Error Code Constants
      *
      * @access private
      */
-    private function _get_curlErrorCodeConstant()
+    private function _get_curlErrorCodeConstants()
     {
         $constants = get_defined_constants(true);
         $filtered_array = array_filter(
@@ -1857,6 +1872,17 @@ class Curl
             ARRAY_FILTER_USE_KEY
         );
         $curl_const_by_code = array_flip($filtered_array);
+        return $curl_const_by_code;
+    }
+
+    /**
+     * Get Curl Error Code Constant
+     *
+     * @access private
+     */
+    private function _get_curlErrorCodeConstant()
+    {
+        $curl_const_by_code = $this->curlErrorCodeConstants;
         if (isset($curl_const_by_code[$this->curlErrorCode])) {
             return $curl_const_by_code[$this->curlErrorCode];
         }
@@ -1910,11 +1936,14 @@ class Curl
      */
     private function buildCookies()
     {
-        // Avoid using http_build_query() as unnecessary encoding is performed.
-        // http_build_query($this->cookies, '', '; ');
-        $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
-            return $k . '=' . $v;
-        }, array_keys($this->cookies), array_values($this->cookies))));
+        // Avoid changing CURLOPT_COOKIE if there are no cookies set.
+        if (count($this->cookies)) {
+            // Avoid using http_build_query() as unnecessary encoding is performed.
+            // http_build_query($this->cookies, '', '; ');
+            $this->setOpt(CURLOPT_COOKIE, implode('; ', array_map(function ($k, $v) {
+                return $k . '=' . $v;
+            }, array_keys($this->cookies), array_values($this->cookies))));
+        }
     }
 
     /**
@@ -2111,12 +2140,27 @@ class Curl
      * @access private
      * @param  $base_url
      */
-    private function initialize($base_url = null)
+    private function initialize($base_url = null, $options = [])
     {
+        if (isset($options)) {
+            $this->setOpts($options);
+        }
+
         $this->id = uniqid('', true);
-        $this->setDefaultUserAgent();
-        $this->setDefaultTimeout();
-        $this->setOpt(CURLINFO_HEADER_OUT, true);
+
+        // Only set default user agent if not already set.
+        if (!array_key_exists(CURLOPT_USERAGENT, $this->options)) {
+            $this->setDefaultUserAgent();
+        }
+
+        // Only set default timeout if not already set.
+        if (!array_key_exists(CURLOPT_TIMEOUT, $this->options)) {
+            $this->setDefaultTimeout();
+        }
+
+        if (!array_key_exists(CURLINFO_HEADER_OUT, $this->options)) {
+            $this->setDefaultHeaderOut();
+        }
 
         // Create a placeholder to temporarily store the header callback data.
         $header_callback_data = new \stdClass();

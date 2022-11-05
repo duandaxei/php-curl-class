@@ -2059,31 +2059,35 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
     public function testSetOptAndSetOptOverride()
     {
         $multi_curl_user_agent = 'multi curl user agent';
-        $curl_user_agent = 'curl user agent';
+        $curl_user_agent_2 = 'curl user agent 2';
+        $curl_user_agent_3 = 'curl user agent 3';
         $data = ['key' => 'HTTP_USER_AGENT'];
 
         $multi_curl = new MultiCurl();
         $multi_curl->setHeader('X-DEBUG-TEST', 'server');
+
         $multi_curl->setOpt(CURLOPT_USERAGENT, $multi_curl_user_agent);
 
         $get_1 = $multi_curl->addGet(Test::TEST_URL, $data);
         $get_1->complete(function ($instance) use ($multi_curl_user_agent) {
             \PHPUnit\Framework\Assert::assertEquals($multi_curl_user_agent, $instance->getOpt(CURLOPT_USERAGENT));
-        });
-
-        $get_2 = $multi_curl->addGet(Test::TEST_URL, $data);
-        $get_2->complete(function ($instance) use ($multi_curl_user_agent) {
-            \PHPUnit\Framework\Assert::assertEquals($multi_curl_user_agent, $instance->getOpt(CURLOPT_USERAGENT));
             \PHPUnit\Framework\Assert::assertEquals($multi_curl_user_agent, $instance->response);
         });
 
-        $get_3 = $multi_curl->addGet(Test::TEST_URL, $data);
-        $get_3->beforeSend(function ($instance) use ($curl_user_agent) {
-            $instance->setOpt(CURLOPT_USERAGENT, $curl_user_agent);
+        $get_2 = $multi_curl->addGet(Test::TEST_URL, $data);
+        $get_2->setOpt(CURLOPT_USERAGENT, $curl_user_agent_2);
+        $get_2->complete(function ($instance) use ($curl_user_agent_2) {
+            \PHPUnit\Framework\Assert::assertEquals($curl_user_agent_2, $instance->getOpt(CURLOPT_USERAGENT));
+            \PHPUnit\Framework\Assert::assertEquals($curl_user_agent_2, $instance->response);
         });
-        $get_3->complete(function ($instance) use ($curl_user_agent) {
-            \PHPUnit\Framework\Assert::assertEquals($curl_user_agent, $instance->getOpt(CURLOPT_USERAGENT));
-            \PHPUnit\Framework\Assert::assertEquals($curl_user_agent, $instance->response);
+
+        $get_3 = $multi_curl->addGet(Test::TEST_URL, $data);
+        $get_3->beforeSend(function ($instance) use ($curl_user_agent_3) {
+            $instance->setOpt(CURLOPT_USERAGENT, $curl_user_agent_3);
+        });
+        $get_3->complete(function ($instance) use ($curl_user_agent_3) {
+            \PHPUnit\Framework\Assert::assertEquals($curl_user_agent_3, $instance->getOpt(CURLOPT_USERAGENT));
+            \PHPUnit\Framework\Assert::assertEquals($curl_user_agent_3, $instance->response);
         });
 
         $multi_curl->start();
@@ -2304,6 +2308,73 @@ class MultiCurlTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals('yum', $get_1->responseCookies['mycookie']);
         $this->assertEquals('yummy', $get_2->responseCookies['mycookie']);
+    }
+
+    public function testSetCookieStringMultiCurl()
+    {
+        $cookie_string = 'fruit=apple; color=red';
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'cookie');
+        $multi_curl->setCookieString($cookie_string);
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->complete(function ($instance) use ($cookie_string) {
+            \PHPUnit\Framework\Assert::assertEquals('fruit=apple&color=red', $instance->response);
+            \PHPUnit\Framework\Assert::assertEquals($cookie_string, $instance->getOpt(CURLOPT_COOKIE));
+        });
+
+        $multi_curl->start();
+    }
+
+    public function testSetCookieStringCurl()
+    {
+        $cookie_string = 'fruit=apple; color=red';
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'cookie');
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->setCookieString($cookie_string);
+        $get_1->complete(function ($instance) use ($cookie_string) {
+            \PHPUnit\Framework\Assert::assertEquals('fruit=apple&color=red', $instance->response);
+            \PHPUnit\Framework\Assert::assertEquals($cookie_string, $instance->getOpt(CURLOPT_COOKIE));
+        });
+
+        $multi_curl->start();
+    }
+
+    public function testSetCookieString()
+    {
+        $cookie_string_1 = 'fruit=apple; color=red';
+        $cookie_string_2 = 'fruit=banana; color=yellow';
+        $cookie_string_3 = 'fruit=orange; color=orange';
+
+        $multi_curl = new MultiCurl();
+        $multi_curl->setHeader('X-DEBUG-TEST', 'cookie');
+        $multi_curl->setCookieString($cookie_string_1);
+
+        $get_1 = $multi_curl->addGet(Test::TEST_URL);
+        $get_1->complete(function ($instance) use ($cookie_string_1) {
+            \PHPUnit\Framework\Assert::assertEquals('fruit=apple&color=red', $instance->response);
+            \PHPUnit\Framework\Assert::assertEquals($cookie_string_1, $instance->getOpt(CURLOPT_COOKIE));
+        });
+
+        $get_2 = $multi_curl->addGet(Test::TEST_URL);
+        $get_2->setCookieString($cookie_string_2);
+        $get_2->complete(function ($instance) use ($cookie_string_2) {
+            \PHPUnit\Framework\Assert::assertEquals('fruit=banana&color=yellow', $instance->response);
+            \PHPUnit\Framework\Assert::assertEquals($cookie_string_2, $instance->getOpt(CURLOPT_COOKIE));
+        });
+
+        $get_3 = $multi_curl->addGet(Test::TEST_URL);
+        $get_3->setCookieString($cookie_string_3);
+        $get_3->complete(function ($instance) use ($cookie_string_3) {
+            \PHPUnit\Framework\Assert::assertEquals('fruit=orange&color=orange', $instance->response);
+            \PHPUnit\Framework\Assert::assertEquals($cookie_string_3, $instance->getOpt(CURLOPT_COOKIE));
+        });
+
+        $multi_curl->start();
     }
 
     public function testJsonRequest()
