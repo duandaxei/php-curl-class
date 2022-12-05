@@ -8,7 +8,7 @@ use Curl\Url;
 
 class Curl
 {
-    const VERSION = '9.10.0';
+    const VERSION = '9.11.0';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl = null;
@@ -1579,6 +1579,31 @@ class Curl
                 echo
                     'Warning: Request headers (Curl::requestHeaders) are expected be empty ' .
                     '(CURLOPT_VERBOSE was enabled or CURLINFO_HEADER_OUT was disabled).' . "\n";
+            }
+
+            if (isset($this->responseHeaders['allow'])) {
+                $allowed_request_types = array_map(function ($v) {
+                    return trim($v);
+                }, explode(',', strtoupper($this->responseHeaders['allow'])));
+
+                $request_types = array(
+                    'DELETE' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'DELETE',
+                    'GET' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'GET' || $this->getOpt(CURLOPT_HTTPGET),
+                    'HEAD' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'HEAD',
+                    'OPTIONS' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'OPTIONS',
+                    'PATCH' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'PATCH',
+                    'POST' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'POST' || $this->getOpt(CURLOPT_POST),
+                    'PUT' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'PUT',
+                    'SEARCH' => $this->getOpt(CURLOPT_CUSTOMREQUEST) === 'SEARCH',
+                );
+
+                foreach ($request_types as $http_method_name => $http_method_used) {
+                    if ($http_method_used && !in_array($http_method_name, $allowed_request_types, true)) {
+                        echo
+                            'Warning: A ' . $http_method_name . ' request was made, but only the following request ' .
+                            'types are allowed: ' . implode(', ', $allowed_request_types) . "\n";
+                    }
+                }
             }
 
             echo
