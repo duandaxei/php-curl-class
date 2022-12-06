@@ -7,7 +7,7 @@ use Curl\Url;
 
 class Curl
 {
-    const VERSION = '9.11.0';
+    const VERSION = '9.11.1';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl = null;
@@ -2124,6 +2124,8 @@ class Curl
      *     Returns the original raw response unless a default decoder has been set.
      *   If the response content-type cannot be determined:
      *     Returns the original raw response.
+     *   If the response content-encoding is gzip:
+     *     Returns the response gzip-decoded.
      */
     private function parseResponse($response_headers, $raw_response)
     {
@@ -2145,6 +2147,13 @@ class Curl
                 if ($this->defaultDecoder) {
                     $response = call_user_func($this->defaultDecoder, $response);
                 }
+            }
+        }
+
+        if (isset($response_headers['Content-Encoding']) && $response_headers['Content-Encoding'] === 'gzip') {
+            $decoded_response = gzdecode($response);
+            if ($decoded_response !== false) {
+                $response = $decoded_response;
             }
         }
 
