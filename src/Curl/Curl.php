@@ -7,7 +7,7 @@ use Curl\Url;
 
 class Curl
 {
-    const VERSION = '9.12.1';
+    const VERSION = '9.12.2';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl = null;
@@ -2156,7 +2156,8 @@ class Curl
         }
 
         if (isset($response_headers['Content-Encoding']) && $response_headers['Content-Encoding'] === 'gzip') {
-            $decoded_response = gzdecode($response);
+            // Use @ to suppress message "Warning gzdecode(): data error".
+            $decoded_response = @gzdecode($response);
             if ($decoded_response !== false) {
                 $response = $decoded_response;
             }

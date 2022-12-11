@@ -181,20 +181,28 @@ if ($test === 'http_basic_auth') {
     echo 'OK';
     exit;
 } elseif ($test === 'json_response') {
-    if (isset($_POST['key'])) {
-        $key = $_POST['key'];
-    } elseif (isset($_GET['key'])) {
-        $key = $_GET['key'];
+    if (isset($_POST['headers'])) {
+        foreach ($_POST['headers'] as $header) {
+            header($header);
+        }
     } else {
-        $key = 'Content-Type';
-    }
+        if (isset($_POST['key'])) {
+            $key = $_POST['key'];
+        } elseif (isset($_GET['key'])) {
+            $key = $_GET['key'];
+        } else {
+            $key = 'Content-Type';
+        }
 
-    if (isset($_POST['value'])) {
-        $value = $_POST['value'];
-    } elseif (isset($_GET['value'])) {
-        $value = $_GET['value'];
-    } else {
-        $value = 'application/json';
+        if (isset($_POST['value'])) {
+            $value = $_POST['value'];
+        } elseif (isset($_GET['value'])) {
+            $value = $_GET['value'];
+        } else {
+            $value = 'application/json';
+        }
+
+        header($key . ': ' . $value);
     }
 
     if (isset($_POST['body'])) {
@@ -211,7 +219,6 @@ if ($test === 'http_basic_auth') {
         ]);
     }
 
-    header($key . ': ' . $value);
     echo $body;
     exit;
 } elseif ($test === 'xml_response') {
