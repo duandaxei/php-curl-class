@@ -7,7 +7,7 @@ use Curl\Url;
 
 class Curl
 {
-    const VERSION = '9.12.4';
+    const VERSION = '9.12.5';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl = null;
@@ -2178,7 +2178,7 @@ class Curl
         $response_header_array = explode("\r\n\r\n", $raw_response_headers);
         $response_header  = '';
         for ($i = count($response_header_array) - 1; $i >= 0; $i--) {
-            if (stripos($response_header_array[$i], 'HTTP/') === 0) {
+            if (isset($response_header_array[$i]) && stripos($response_header_array[$i], 'HTTP/') === 0) {
                 $response_header = $response_header_array[$i];
                 break;
             }
