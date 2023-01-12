@@ -53,6 +53,7 @@ $curl->get('https://www.example.com/');
 
 if ($curl->error) {
     echo 'Error: ' . $curl->errorMessage . "\n";
+    $curl->diagnose();
 } else {
     echo 'Response:' . "\n";
     var_dump($curl->response);
@@ -365,7 +366,7 @@ MultiCurl::stop()
 MultiCurl::success($callback)
 MultiCurl::unsetHeader($key)
 MultiCurl::unsetProxy()
-MultiCurl::verbose($on = true, $output = STDERR)
+MultiCurl::verbose($on = true, $output = 'STDERR')
 ```
 
 ### Security
