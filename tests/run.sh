@@ -93,8 +93,6 @@ extra_args="${@}"
 "${phpunit_to_use}" --version
 "${phpunit_to_use}" \
     --configuration "phpunit.xml" \
-    --debug \
-    --verbose \
     ${extra_args}
 if [[ "${?}" -ne 0 ]]; then
     echo "Error: phpunit command failed"
@@ -125,5 +123,5 @@ done
 if [[ "${CI_PHP_FUTURE_RELEASE}" != "true" ]]; then
     exit "${#errors[@]}"
 elif [[ "${#errors[@]}" -ne 0 ]]; then
-    echo "One or more tests failed, but allowed as CI_PHP_FUTURE_RELEASE is on for PHP version ${CI_PHP_VERSION}."
+    echo "One or more tests failed, but allowed as the CI_PHP_FUTURE_RELEASE flag is on for PHP version ${CI_PHP_VERSION}."
 fi
