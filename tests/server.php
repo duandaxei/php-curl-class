@@ -283,9 +283,13 @@ if ($test === 'http_basic_auth') {
     $unsafe_file_path = $_GET['file_path'];
     header('Content-Type: image/png');
     header('Content-Disposition: attachment; filename="image.png"');
-    header('Content-Length: ' . filesize($unsafe_file_path));
-    header('ETag: ' . md5_file($unsafe_file_path));
-    readfile($unsafe_file_path);
+
+    if (!isset($_SERVER['HTTP_RANGE'])) {
+        header('ETag: ' . md5_file($unsafe_file_path));
+    }
+
+    $server = new ContentRangeServer\ContentRangeServer();
+    $server->serve($unsafe_file_path);
     exit;
 } elseif ($test === 'download_file_size') {
     if (isset($_GET['http_response_code'])) {
@@ -377,15 +381,36 @@ if ($test === 'http_basic_auth') {
 } elseif ($test === 'retry') {
     session_start();
 
-    if (isset($_SESSION['failures_remaining'])) {
-        $failures_remaining = $_SESSION['failures_remaining'];
+    if (isset($_SESSION['should_fail_entries'])) {
+        $should_fail_entries = $_SESSION['should_fail_entries'];
     } else {
-        $failures_remaining = (int)$_GET['failures'];
-        $_SESSION['failures_remaining'] = $failures_remaining;
+        // Support specifying which requests fail and succeed (e.g.
+        // http://127.0.0.1:8000/?failures=1,1,0 to fail, fail, succeed).
+        if (strpos($_GET['failures'], ',') !== false) {
+            $should_fail_entries = explode(',', $_GET['failures']);
+            array_walk($should_fail_entries, function (&$value, $key) {
+                if ($value === '1') {
+                    $value = true;
+                } elseif ($value === '0') {
+                    $value = false;
+                } else {
+                    $value = '';
+                }
+            });
+
+        // Support specifying the number of failures before a success (e.g.
+        // http://127.0.0.1:8000/?failures=3).
+        } else {
+            $failure_count = (int)$_GET['failures'];
+            $should_fail_entries = array_fill(0, $failure_count, true);
+            $should_fail_entries[] = false;
+        }
     }
 
-    if ($failures_remaining >= 1) {
-        $_SESSION['failures_remaining'] -= 1;
+    $should_fail = array_shift($should_fail_entries);
+    $_SESSION['should_fail_entries'] = $should_fail_entries;
+
+    if ($should_fail) {
         $message = '503 Service Unavailable';
     } else {
         $message = '202 Accepted';
@@ -393,7 +418,7 @@ if ($test === 'http_basic_auth') {
 
     $response = json_encode([
         'message' => $message,
-        'remaining_failures' => $_SESSION['failures_remaining'],
+        'remaining_should_fail_entries' => $_SESSION['should_fail_entries'],
     ], JSON_PRETTY_PRINT);
 
     header('HTTP/1.1 ' . $message);
