@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace CurlTest;
 
@@ -14,7 +16,7 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
     protected function setUp(): void
     {
-        $this->skip_slow_tests = in_array(getenv('PHP_CURL_CLASS_SKIP_SLOW_TESTS'), ['1', 'y', 'Y']);
+        $this->skip_slow_tests = in_array(getenv('PHP_CURL_CLASS_SKIP_SLOW_TESTS'), ['1', 'y', 'Y'], true);
     }
 
     public function testExtensionsLoaded()
@@ -751,7 +753,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
         $filesize = filesize($filename);
 
-        foreach ([
+        foreach (
+            [
                 false,
                 0,
                 1,
@@ -782,7 +785,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
                 $filesize + 2,
                 $filesize + 3,
 
-            ] as $length) {
+            ] as $length
+        ) {
             $source = Test::TEST_URL;
             $destination = \Helper\get_tmp_file_path();
 
@@ -1111,7 +1115,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
     public function testResponseBody()
     {
-        foreach ([
+        foreach (
+            [
             'GET' => 'OK',
             'POST' => 'OK',
             'PUT' => 'OK',
@@ -1120,7 +1125,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
             'DELETE' => 'OK',
             'HEAD' => '',
             'OPTIONS' => 'OK',
-            ] as $request_method => $expected_response) {
+            ] as $request_method => $expected_response
+        ) {
             $curl = new Curl();
             $curl->setHeader('X-DEBUG-TEST', 'response_body');
             $this->assertEquals($expected_response, $curl->$request_method(Test::TEST_URL));
@@ -1489,7 +1495,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
     public function testJsonRequest()
     {
-        foreach ([
+        foreach (
+            [
                 [
                     [
                         'key' => 'value',
@@ -1507,24 +1514,29 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
                     ],
                     '{"key":"value","strings":["a","b","c"]}',
                 ],
-            ] as $test) {
+            ] as $test
+        ) {
             list($data, $expected_response) = $test;
 
             $test = new Test();
             $this->assertEquals($expected_response, $test->server('post_json', 'POST', json_encode($data)));
 
-            foreach ([
+            foreach (
+                [
                 'Content-Type',
                 'content-type',
-                'CONTENT-TYPE'] as $key) {
-                foreach ([
+                'CONTENT-TYPE'] as $key
+            ) {
+                foreach (
+                    [
                     'APPLICATION/JSON',
                     'APPLICATION/JSON; CHARSET=UTF-8',
                     'APPLICATION/JSON;CHARSET=UTF-8',
                     'application/json',
                     'application/json; charset=utf-8',
                     'application/json;charset=UTF-8',
-                    ] as $value) {
+                    ] as $value
+                ) {
                     $test = new Test();
                     $test->curl->setHeader($key, $value);
                     $this->assertEquals($expected_response, $test->server('post_json', 'POST', json_encode($data)));
@@ -1539,18 +1551,22 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
     public function testJsonResponse()
     {
-        foreach ([
+        foreach (
+            [
             'Content-Type',
             'content-type',
-            'CONTENT-TYPE'] as $key) {
-            foreach ([
+            'CONTENT-TYPE'] as $key
+        ) {
+            foreach (
+                [
                 'APPLICATION/JSON',
                 'APPLICATION/JSON; CHARSET=UTF-8',
                 'APPLICATION/JSON;CHARSET=UTF-8',
                 'application/json',
                 'application/json; charset=utf-8',
                 'application/json;charset=UTF-8',
-                ] as $value) {
+                ] as $value
+            ) {
                 $test = new Test();
                 $test->server('json_response', 'POST', [
                     'key' => $key,
@@ -2850,11 +2866,14 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
 
     public function testXmlResponse()
     {
-        foreach ([
+        foreach (
+            [
             'Content-Type',
             'content-type',
-            'CONTENT-TYPE'] as $key) {
-            foreach ([
+            'CONTENT-TYPE'] as $key
+        ) {
+            foreach (
+                [
                 'application/atom+xml; charset=UTF-8',
                 'application/atom+xml;charset=UTF-8',
                 'application/rss+xml',
@@ -2869,7 +2888,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
                 'text/xml',
                 'text/xml; charset=utf-8',
                 'text/xml;charset=utf-8',
-                ] as $value) {
+                ] as $value
+            ) {
                 $test = new Test();
                 $test->server('xml_response', 'POST', [
                     'key' => $key,
@@ -3546,7 +3566,7 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
             [
                 'args' => [
                     'url' => 'https://www.example.com/?a=base',
-                    'mixed_data' => 'b=2&c=3'
+                    'mixed_data' => 'b=2&c=3',
                 ],
                 'expected' => 'https://www.example.com/?a=base&b=2&c=3',
             ],
@@ -4225,7 +4245,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $test_3_output = ob_get_contents();
         ob_end_clean();
 
-        foreach ([
+        foreach (
+            [
             '--- Begin PHP Curl Class diagnostic output ---',
             'PHP Curl Class version: ' . Curl::VERSION,
             'PHP version: ' . PHP_VERSION,
@@ -4238,7 +4259,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
             'Received an HTTP 401 error response with message "HTTP/1.1 401 Unauthorized".',
             'Received an empty response body (response="").',
             '--- End PHP Curl Class diagnostic output ---',
-        ] as $expected_string) {
+            ] as $expected_string
+        ) {
             $this->assertStringContainsString($expected_string, $test_1_output);
             $this->assertStringContainsString($expected_string, $test_2_output);
             $this->assertStringContainsString($expected_string, $test_3_output);
@@ -4251,7 +4273,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
         $test->server('error_message', 'POST');
         $test_output = $test->curl->diagnose(true);
 
-        foreach ([
+        foreach (
+            [
             '--- Begin PHP Curl Class diagnostic output ---',
             'PHP Curl Class version: ' . Curl::VERSION,
             'PHP version: ' . PHP_VERSION,
@@ -4264,7 +4287,8 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
             'Received an HTTP 401 error response with message "HTTP/1.1 401 Unauthorized".',
             'Received an empty response body (response="").',
             '--- End PHP Curl Class diagnostic output ---',
-        ] as $expected_string) {
+            ] as $expected_string
+        ) {
             $this->assertStringContainsString($expected_string, $test_output);
         }
     }
@@ -4523,7 +4547,7 @@ class PHPCurlClassTest extends \PHPUnit\Framework\TestCase
                                     'message' => 'The service is currently unavailable.',
                                     'domain' => 'global',
                                     'reason' => 'backendError',
-                                ]
+                                ],
                             ],
                             'status' => 'UNAVAILABLE',
                         ],
