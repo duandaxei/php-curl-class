@@ -7,11 +7,11 @@ from datetime import datetime
 from datetime import timezone
 from pathlib import Path
 
-import git
+from git.repo import Repo
 from github import Github
 
 # The owner and repository name. For example, octocat/Hello-World.
-GITHUB_REPOSITORY = os.getenv("GITHUB_REPOSITORY")
+GITHUB_REPOSITORY = os.getenv("GITHUB_REPOSITORY", "")
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_REF_NAME = os.getenv("GITHUB_REF_NAME")
@@ -29,7 +29,7 @@ RECENT_PULL_REQUEST_LIMIT = 10
 def main():
     # Find most recent tag and timestamp.
     #   git for-each-ref --format="%(refname:short) | %(creatordate)" "refs/tags/*"
-    local_repo = git.Repo(ROOT)
+    local_repo = Repo(ROOT)
 
     # Sort the tags by version.
     #   git tag --list | sort --reverse --version-sort
