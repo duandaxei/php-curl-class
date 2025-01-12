@@ -88,7 +88,7 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
-        return (bool) array_key_exists(strtolower($offset), $this->data);
+        return array_key_exists(strtolower($offset), $this->data);
     }
 
     /**
@@ -129,20 +129,18 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Count
      *
-     * @param void
      * @return int The number of elements stored in the array.
      * @see https://secure.php.net/manual/en/countable.count.php
      */
     #[\ReturnTypeWillChange]
     public function count()
     {
-        return (int) count($this->data);
+        return count($this->data);
     }
 
     /**
      * Current
      *
-     * @param void
      * @return mixed Data at the current position.
      * @see https://secure.php.net/manual/en/iterator.current.php
      */
@@ -155,7 +153,6 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Next
      *
-     * @param void
      * @return void
      * @see https://secure.php.net/manual/en/iterator.next.php
      */
@@ -168,7 +165,6 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     /**
      * Key
      *
-     * @param void
      * @return mixed Case-sensitive key at current position.
      * @see https://secure.php.net/manual/en/iterator.key.php
      */
@@ -188,13 +184,12 @@ class CaseInsensitiveArray implements \ArrayAccess, \Countable, \Iterator
     #[\ReturnTypeWillChange]
     public function valid()
     {
-        return (bool) (key($this->data) !== null);
+        return (key($this->data) !== null);
     }
 
     /**
      * Rewind
      *
-     * @param void
      * @return void
      * @see https://secure.php.net/manual/en/iterator.rewind.php
      */
