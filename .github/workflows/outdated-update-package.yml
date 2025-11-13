@@ -41,6 +41,7 @@ jobs:
               "scripts/make_release_requirements.in"
 
       - name: Create or update pull request
+        id: cpr
         uses: peter-evans/create-pull-request@v7
         with:
           commit-message: "Update package ${{ github.event.inputs.package_name }}"
@@ -48,10 +49,39 @@ jobs:
           title: ⬆ Update ${{ github.event.inputs.package_name }}
           body: "Updating ${{ github.event.inputs.package_name }}"
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          branch: "create-pull-request/upgrade-${{ github.event.inputs.package_name }}-${{ github.run_id }}"
+          branch: "create-pull-request/upgrade-${{ github.event.inputs.package_name }}"
           committer: GitHub <noreply@github.com>
           delete-branch: true
           token: ${{ secrets.PHP_CURL_CLASS_BOT_TOKEN }}
           push-to-fork: php-curl-class-helper/php-curl-class
         env:
           GITHUB_TOKEN: ${{ secrets.PHP_CURL_CLASS_BOT_TOKEN }}
+
+      - name: Pull request created or updated
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          echo "Pull request: ${{ steps.cpr.outputs.pull-request-url }}"
+
+      - name: Enable auto-merge for pull request
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          gh pr merge --auto --merge "${PR_URL}"
+        env:
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Approve update
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          review_status="$(
+              gh pr view "${PR_URL}" \
+                  --json="reviewDecision" \
+                  --jq=".reviewDecision"
+          )"
+          echo "Pull request review status: ${review_status}"
+          if [[ "${review_status}" != "APPROVED" ]]; then
+              gh pr review --approve "${PR_URL}"
+          fi
+        env:
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          GITHUB_TOKEN: ${{ secrets.PHP_CURL_CLASS_TOKEN }}
