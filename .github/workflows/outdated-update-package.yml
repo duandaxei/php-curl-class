@@ -23,7 +23,9 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-          python -m pip install --upgrade pip pip-tools
+          # TODO: Remove version contraint on "pip".
+          # https://github.com/jazzband/pip-tools/issues/2319
+          python -m pip install "pip<26.0" pip-tools
 
       - name: Upgrade outdated package
         env:
@@ -65,7 +67,7 @@ jobs:
       - name: Enable auto-merge for pull request
         if: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
-          gh pr merge --auto --merge "${PR_URL}"
+          gh pr merge --auto --squash "${PR_URL}"
         env:
           PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
