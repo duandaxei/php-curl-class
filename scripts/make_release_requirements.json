@@ -1,17 +1,10 @@
 [
   {
-    "outdated_count": "2"
-  },
-  {
-    "name": "charset-normalizer",
-    "version": "3.4.5",
-    "latest_version": "3.4.6",
-    "latest_filetype": "wheel"
+    "outdated_count": "1",
   },
   {
     "name": "PyJWT",
     "version": "2.12.0",
     "latest_version": "2.12.1",
-    "latest_filetype": "wheel"
-  }
+  },
 ]
