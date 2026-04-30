@@ -8,6 +8,8 @@ on:
 jobs:
   update-pre-commit:
     runs-on: ubuntu-latest
+    env:
+      FORCE_COLOR: 1
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -15,11 +17,18 @@ jobs:
           ref: 'master'
           persist-credentials: false
 
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: .python-version
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8.1.0
+
       - name: Update dependencies
         run: |
           set -x
-          python -m pip install --upgrade pip
-          pip install pre-commit packaging
+          uv pip install --system pre-commit packaging
           python scripts/pre_commit_stable.py autoupdate --config="tests/.pre-commit-config.yaml"
 
       - name: Gather changes
